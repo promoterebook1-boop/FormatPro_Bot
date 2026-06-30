@@ -1,9 +1,9 @@
 import os
-import sys
 import logging
 import asyncio
 from pathlib import Path
 from datetime import datetime
+from typing import Optional
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
@@ -13,19 +13,15 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.memory import MemoryStorage
 from dotenv import load_dotenv
 
-# Import converter
 from utils.converter import ImageConverter
 
 # Load environment variables
 load_dotenv()
-
-# Configuration
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+TOKEN = os.getenv("BOT_TOKEN")
 DEBUG_MODE = os.getenv("DEBUG_MODE", "False").lower() == "true"
 
-if not BOT_TOKEN:
-    logging.error("❌ BOT_TOKEN is not set in environment variables")
-    sys.exit(1)
+if not TOKEN:
+    raise ValueError("BOT_TOKEN is not set in environment variables")
 
 # Configure logging
 log_level = logging.DEBUG if DEBUG_MODE else logging.INFO
@@ -35,8 +31,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Initialize bot
-bot = Bot(token=BOT_TOKEN)
+# Initialize bot and dispatcher
+bot = Bot(token=TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
 
@@ -44,9 +40,11 @@ dp = Dispatcher(storage=storage)
 TEMP_DIR = Path("temp")
 TEMP_DIR.mkdir(exist_ok=True)
 
-# Constants
-BOT_VERSION = "2.0.0"
+# Supported formats
 SUPPORTED_FORMATS = ["PNG", "JPG", "JPEG", "WEBP", "BMP", "ICO", "GIF", "TIFF"]
+
+# Bot version
+BOT_VERSION = "1.0.0"
 
 # ============ STATES ============
 
@@ -99,7 +97,7 @@ async def start_command(message: Message):
         f"👋 **Hello {message.from_user.first_name}!**\n\n"
         "Welcome to **FormatPro Bot** - your professional image conversion assistant!\n\n"
         "📸 **Features:**\n"
-        "• Convert between 8 image formats\n"
+        "• Convert images between 8 formats\n"
         "• High-quality output\n"
         "• Fast processing\n"
         "• User-friendly interface\n\n"
@@ -133,10 +131,7 @@ async def convert_command(message: Message, state: FSMContext):
 @dp.message(Command("formats"))
 async def formats_command(message: Message):
     """Handle /formats command"""
-    formats_text = "📋 **Supported Image Formats:**\n\n"
-    for fmt in SUPPORTED_FORMATS:
-        formats_text += f"• `{fmt}`\n"
-    
+    formats_text = "📋 **Supported Image Formats:**\n\n" + "\n".join([f"• `{fmt}`" for fmt in SUPPORTED_FORMATS])
     await message.answer(formats_text, parse_mode="Markdown")
 
 @dp.message(Command("about"))
@@ -367,7 +362,6 @@ async def main():
     """Main entry point"""
     logger.info("🚀 Starting FormatPro Bot...")
     logger.info(f"📌 Version: {BOT_VERSION}")
-    logger.info(f"🐍 Python: {sys.version}")
     logger.info(f"🔧 Debug Mode: {DEBUG_MODE}")
     
     try:
