@@ -4,7 +4,6 @@ import logging
 import asyncio
 from pathlib import Path
 from datetime import datetime
-from typing import Optional
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
@@ -47,7 +46,7 @@ TEMP_DIR.mkdir(exist_ok=True)
 
 # Constants
 BOT_VERSION = "2.0.0"
-SUPPORTED_FORMATS = ["PNG", "JPG", "JPEG", "WEBP", "BMP", "ICO", "GIF", "TIFF", "SVG"]
+SUPPORTED_FORMATS = ["PNG", "JPG", "JPEG", "WEBP", "BMP", "ICO", "GIF", "TIFF"]
 
 # ============ STATES ============
 
@@ -100,7 +99,7 @@ async def start_command(message: Message):
         f"👋 **Hello {message.from_user.first_name}!**\n\n"
         "Welcome to **FormatPro Bot** - your professional image conversion assistant!\n\n"
         "📸 **Features:**\n"
-        "• Convert between 9 image formats\n"
+        "• Convert between 8 image formats\n"
         "• High-quality output\n"
         "• Fast processing\n"
         "• User-friendly interface\n\n"
@@ -114,8 +113,7 @@ async def start_command(message: Message):
         "/convert - Start conversion\n"
         "/formats - Show supported formats\n"
         "/about - Bot information\n"
-        "/help - Get help\n"
-        "/stats - Show bot statistics"
+        "/help - Get help"
     )
     
     await message.answer(welcome_text, reply_markup=get_main_menu_keyboard(), parse_mode="Markdown")
@@ -148,10 +146,9 @@ async def about_command(message: Message):
         "🤖 **FormatPro Bot**\n\n"
         f"📌 Version: `{BOT_VERSION}`\n"
         "⚡ Built with: `Aiogram 3` & `Pillow`\n"
-        "🐍 Python: `3.11.10`\n"
         "📅 Status: ✅ **Online**\n\n"
         "🔹 **Features:**\n"
-        "• Convert between 9 image formats\n"
+        "• Convert between 8 image formats\n"
         "• High-quality output\n"
         "• Fast processing\n"
         "• User-friendly interface\n\n"
@@ -178,20 +175,6 @@ async def help_command(message: Message):
         "Contact @FormatPro_Bot support."
     )
     await message.answer(help_text, parse_mode="Markdown")
-
-@dp.message(Command("stats"))
-async def stats_command(message: Message):
-    """Handle /stats command"""
-    stats_text = (
-        "📊 **Bot Statistics**\n\n"
-        f"🔄 **Supported Formats:** {len(SUPPORTED_FORMATS)}\n"
-        f"🐍 **Python Version:** 3.11.10\n"
-        f"📦 **Bot Version:** {BOT_VERSION}\n"
-        f"⏱️ **Uptime:** Online\n"
-        f"💾 **Temp Storage:** {TEMP_DIR}\n\n"
-        "✅ **Status:** Operational"
-    )
-    await message.answer(stats_text, parse_mode="Markdown")
 
 # ============ CALLBACK QUERY HANDLERS ============
 
@@ -386,7 +369,6 @@ async def main():
     logger.info(f"📌 Version: {BOT_VERSION}")
     logger.info(f"🐍 Python: {sys.version}")
     logger.info(f"🔧 Debug Mode: {DEBUG_MODE}")
-    logger.info(f"📁 Temp Directory: {TEMP_DIR.absolute()}")
     
     try:
         # Start polling
