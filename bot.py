@@ -102,6 +102,8 @@ def get_main_menu_keyboard() -> InlineKeyboardMarkup:
 @dp.message(Command("start"))
 async def start_command(message: Message):
     """Handle /start command"""
+    logger.info(f"Start command received from {message.from_user.id}")
+    
     welcome_text = (
         f"👋 **Hello {message.from_user.first_name}!**\n\n"
         "Welcome to **FormatPro Bot** - your professional image conversion assistant!\n\n"
